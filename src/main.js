@@ -1,3 +1,5 @@
+const NOT_SET = {};
+
 const flatten = imm => {
     const res = new imm.constructor();
 
@@ -28,13 +30,16 @@ export default class Immutable {
         if (res._depth >= 5) return flatten(res);
         return res;
     }
-    get(key) {
-        if (this._properties.hasOwnProperty(key)) return this._properties[key];
-        if (this._roots.length === 0) return undefined;
-        for (const root of this._roots) {
-            const res = root.get(key);
-            if (res !== undefined) return res;
+    get(key, notSetValue) {
+        if (this._properties.hasOwnProperty(key)) {
+            if (this._properties[key] === NOT_SET) return notSetValue;
+            return this._properties[key];
         }
+        for (const root of this._roots) {
+            const res = root.get(key, NOT_SET);
+            if (res !== NOT_SET) return res;
+        }
+        return notSetValue;
     }
     update(keys, f) {
         if (Array.isArray(keys)) {
@@ -44,7 +49,7 @@ export default class Immutable {
         return this.set(key, f(this.get(key)));
     }
     delete(key) {
-        return this.set(key, undefined);
+        return this.set(key, NOT_SET);
     }
     merge(map) {
         const res = new this.constructor();

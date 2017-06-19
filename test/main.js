@@ -12,6 +12,16 @@ describe('Immutablify', () => {
             return this.set('hp', this.get('hp') - damage);
         }
     }
+    describe('#get()', () => {
+        it('should return notSetValue if it doesn\'t has the key', () => {
+            const obj = new Immutable({a: 10, b: 20, c: 30});
+            assert.equal(10, obj.get('a'));
+            assert.equal('foo', obj.get('d', 'foo'));
+
+            const obj2 = obj.delete('a');
+            assert.equal('foo', obj2.get('a', 'foo'));
+        });
+    });
     describe('#set()', () => {
         it('shouldn\'t change itself', () => {
             const obj = new Immutable({});
