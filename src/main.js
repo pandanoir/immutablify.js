@@ -1,3 +1,7 @@
+const prefix = 'pandanoir/';
+export const UPDATE = prefix + 'update';
+export const DELETE = prefix + 'delete';
+export const MERGE = prefix + 'merge';
 const NOT_SET = {};
 
 const flatten = imm => {
@@ -41,22 +45,31 @@ export default class Immutable {
         }
         return notSetValue;
     }
-    update(keys, f) {
+    [UPDATE](keys, f) {
         if (Array.isArray(keys)) {
             const res = this;
             return keys.reduce((bef, key) => bef.set(key, f(bef.get(key))),this);
         }
         return this.set(key, f(this.get(key)));
     }
-    delete(key) {
+    update(keys, f) {
+        return this[UPDATE](keys, f);
+    }
+    [DELETE](key) {
         return this.set(key, NOT_SET);
     }
-    merge(map) {
+    delete(key) {
+        return this[DELETE](key);
+    }
+    [MERGE](map) {
         const res = new this.constructor();
         res._roots = [map, this];
         res._properties = {};
         res._depth = Math.max(map._depth, this._depth) + 1;
         if (res._depth >= 5) return flatten(res);
         return res;
+    }
+    merge(map) {
+        return this[MERGE](map);
     }
 }

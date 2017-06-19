@@ -1,5 +1,5 @@
 const assert = require('assert');
-const Immutable = require('../dist/immutablify.js');
+const Immutable = require('../dist/immutablify.js').default;
 describe('Immutablify', () => {
     class Player extends Immutable {
         constructor() {
