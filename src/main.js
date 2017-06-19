@@ -1,17 +1,17 @@
 const flatten = imm => {
     const res = new imm.constructor();
+
+    if (imm._depth === 0) return imm;
+    imm._roots.reverse();
+    const roots = imm._roots.concat();
+    imm._roots.reverse();
+
+    res._properties = Object.assign(
+        roots.map(root => flatten(root)._properties)
+            .reduce((acc, imm) => Object.assign(acc, imm), {})
+        , imm._properties);
     res._roots = [];
     res._depth = 0;
-    if (imm._roots.length === 0) res._properties = imm._properties;
-    else {
-        imm._roots.reverse();
-        const roots = imm._roots.concat();
-        imm._roots.reverse();
-        res._properties = Object.assign(
-            roots.map(root => flatten(root)._properties)
-                .reduce((acc, imm) => Object.assign(acc, imm), {})
-            , imm._properties);
-    }
     return res;
 };
 export default class Immutable {
