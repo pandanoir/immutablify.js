@@ -5,9 +5,9 @@ export const MERGE = prefix + 'merge';
 const NOT_SET = {};
 
 const flatten = imm => {
-    const res = new imm.constructor();
-
     if (imm._depth === 0) return imm;
+    
+    const res = new imm.constructor();
     imm._roots.reverse();
     const roots = imm._roots.concat();
     imm._roots.reverse();
@@ -71,5 +71,14 @@ export default class Immutable {
     }
     merge(map) {
         return this[MERGE](map);
+    }
+    addGetter() {
+        const flattened = flatten(this);
+        const res = new this.constructor();
+        res._roots = this._roots;
+        res._properties = this._properties;
+        res._depth = this._depth;
+        for (const getter of Object.keys(flattened._properties)) Object.defineProperty(res, getter, {get: function() {return res.get(getter);}});
+        return res;
     }
 }

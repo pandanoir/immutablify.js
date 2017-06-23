@@ -95,4 +95,20 @@ describe('Immutablify', () => {
             assert.equal(undefined, five.get('a'));
         });
     });
+    describe('#addGetter()', () => {
+        it("shouldn't change itself", () => {
+            const one = new Immutable({a: 10, b: 20, c: 30});
+            const two = one.addGetter();
+            assert.equal(false, "a" in one);
+            assert.equal(10, two.a);
+        });
+        it('should search roots', () => {
+            const one = new Immutable({a: 10, b: 20, c: 30});
+            const two = one.set('d', 40).addGetter();
+            assert.equal(10, two.a);
+            assert.equal(20, two.b);
+            assert.equal(30, two.c);
+            assert.equal(40, two.d);
+        })
+    })
 });
